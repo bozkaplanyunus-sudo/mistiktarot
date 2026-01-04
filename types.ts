@@ -1,4 +1,10 @@
 
+export enum Language {
+  TR = 'tr',
+  EN = 'en',
+  FR = 'fr'
+}
+
 export enum DeckType {
   RIDER_WAITE = 'Rider-Waite',
   MARSEILLE = 'Marsilya',
@@ -6,10 +12,10 @@ export enum DeckType {
 }
 
 export enum SpreadType {
-  THREE_CARD = 'Üç Kağıt Açılımı',
-  SIX_CARD = 'Altı Kağıt Açılımı',
-  NINE_CARD = 'Dokuz Kağıt Açılımı',
-  CELTIC_CROSS = 'Kelt Açılımı'
+  THREE_CARD = 'THREE_CARD',
+  SIX_CARD = 'SIX_CARD',
+  NINE_CARD = 'NINE_CARD',
+  CELTIC_CROSS = 'CELTIC_CROSS'
 }
 
 export interface TarotCard {

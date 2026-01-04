@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mistik Tarot Rehberi</title>
+    
+    <!-- App Icon / Favicon mimicking the header emblem -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2248%22 fill=%22%23d97706%22 fill-opacity=%220.2%22 stroke=%22%23d97706%22 stroke-opacity=%220.5%22 stroke-width=%224%22/><text y=%2258%22 x=%2250%22 font-size=%2260%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>✨</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23020617%22/><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22%23d97706%22 fill-opacity=%220.3%22 stroke=%22%23d97706%22 stroke-width=%222%22/><text y=%2258%22 x=%2250%22 font-size=%2250%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>✨</text></svg>">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -29,6 +34,29 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Card Flip Mechanics */
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .card-flipped {
+            transform: rotateY(180deg);
+        }
+        .card-back, .card-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.5rem;
+        }
+        .card-front {
+            transform: rotateY(180deg);
+        }
     </style>
 <script type="importmap">
 {

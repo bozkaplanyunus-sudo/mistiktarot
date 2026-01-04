@@ -19,7 +19,8 @@ export const getTarotInterpretation = async (
   cards: CardSelection[],
   language: Language
 ): Promise<string> => {
-  const model = 'gemini-3-pro-preview';
+  // Daha hızlı yanıt için flash modelini kullanıyoruz
+  const model = 'gemini-3-flash-preview';
   
   const cardsDescription = cards.map((c, i) => 
     `${i+1}. Kart (${c.positionName}): ${c.card.name} ${c.isReversed ? '(Ters)' : '(Düz)'}`
@@ -53,7 +54,7 @@ export const getTarotInterpretation = async (
     return response.text || "Yorum alınamadı.";
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "Mistik kanallarla bağlantı kurulamadı.";
+    return "Mistik kanallarla bağlantı kurulamadı. Lütfen tekrar deneyin.";
   }
 };
 
@@ -62,7 +63,7 @@ export const getRumiFollowUpAnswer = async (
   rumiCard: CardSelection,
   language: Language
 ): Promise<string> => {
-  const model = 'gemini-3-pro-preview';
+  const model = 'gemini-3-flash-preview';
   
   const prompt = `
     Danışan Sorusu: "${question}"

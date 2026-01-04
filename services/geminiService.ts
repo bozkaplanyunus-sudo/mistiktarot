@@ -32,14 +32,13 @@ export const getTarotInterpretation = async (
     Kartlar:
     ${cardsDescription}
 
-    YAZIM VE FORMAT KURALLARI (BU KURALLARA UYMAMAK KRİTİK HATADIR):
-    1. Tüm ana başlıklar ve alt başlıklar KESİNLİKLE sadece _**Başlık Metni**_ formatında olmalıdır (Yani Markdown'da hem alt tire hem çift yıldız kullanılarak kalın+italik yapılmalıdır).
-    2. Başlıkların başında, sonunda veya içinde ASLA yıldız simgesi (*), parıltı (✨), emoji, nokta veya herhangi bir ikon kullanma. 
-    3. Örnek doğru format: _**Geçmişin Esintileri**_
-    4. Örnek yanlış format: * **Geçmiş**, ✨ Başlık ✨, **Başlık**.
-    5. Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır.
-    6. Maddeler için sadece "-" sembolünü kullan.
-    7. Ton: Bilge, mistik ve derinlemesine.
+    YAZIM VE FORMAT KURALLARI (BU KURALLARA UYMAK ZORUNLUDUR):
+    1. Tüm ana başlıklar ve alt başlıklar KESİNLİKLE kendi satırında, tamamen BÜYÜK HARFLERLE yazılmalıdır.
+    2. Başlıkların başında, sonunda veya içinde ASLA yıldız simgesi (*), alt tire (_), parıltı (✨), emoji veya herhangi bir Markdown işareti kullanma. Sadece saf metin kullan.
+    3. Başlıklardan sonra mutlaka bir boş satır bırak.
+    4. Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır.
+    5. Paragraflar arasında boşluk bırak.
+    6. Ton: Bilge, mistik ve derinlemesine.
   `;
 
   try {
@@ -72,10 +71,10 @@ export const getRumiFollowUpAnswer = async (
     Sen Mevlana Celaleddin Rumi'nin bilgeliğini taşıyan bir rehbersin.
     
     YAZIM VE FORMAT KURALLARI:
-    1. Başlıklar kesinlikle ve sadece _**Başlık Metni**_ formatında olmalıdır.
+    1. Başlıklar sadece BÜYÜK HARFLERLE ve Markdown işareti (yıldız, alt tire vb.) olmadan yazılmalıdır.
     2. Başlıklarda ASLA yıldız (*), parıltı, ikon veya emoji kullanma.
-    3. Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır.
-    4. Cevabını şu üç başlık altında ver: _**Gönül Gözü**_, _**Mesnevi'den Hikmet**_, _**Cevap**_.
+    3. Cevabını şu üç başlık altında ver: GÖNÜL GÖZÜ, MESNEVİ'DEN HİKMET, CEVAP.
+    4. Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır.
   `;
 
   try {

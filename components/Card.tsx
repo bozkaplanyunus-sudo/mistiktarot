@@ -36,15 +36,17 @@ const Card: React.FC<CardProps> = ({
   }, [card]);
 
   const handleImgError = () => {
-    if (!card || isError) return;
+    if (!card || isError) {
+      setIsLoading(false);
+      return;
+    }
     
-    // Eğer CDN linki patlarsa ham GitHub linkine dön (daha yavaş ama kesin)
     if (currentSrc.includes('cdn.jsdelivr.net')) {
       setCurrentSrc(currentSrc.replace('cdn.jsdelivr.net/gh', 'raw.githubusercontent.com').replace('@master', '/master'));
     } else {
-      // O da olmazsa m00.jpg (Joker) kartını göster
       setCurrentSrc("https://cdn.jsdelivr.net/gh/ekelen/tarot@master/assets/cards/m00.jpg");
       setIsError(true);
+      setIsLoading(false);
     }
   };
 
@@ -65,19 +67,19 @@ const Card: React.FC<CardProps> = ({
           <div className="absolute inset-1 border border-amber-600/10 rounded"></div>
         </div>
 
-        {/* Card Front - İsim barı kaldırıldı, sadece resim alanı kaldı */}
-        <div className={`card-front absolute inset-0 bg-white rounded-lg overflow-hidden border-2 border-amber-400/80 shadow-2xl flex flex-col ${isReversed ? 'rotate-180' : ''}`}>
+        {/* Card Front */}
+        <div className={`card-front absolute inset-0 bg-slate-950 rounded-lg overflow-hidden border-2 border-amber-400/80 shadow-2xl flex flex-col ${isReversed ? 'rotate-180' : ''}`}>
           {card && (
             <div className="relative flex-1 w-full h-full bg-white flex flex-col overflow-hidden">
               {isLoading && (
-                <div className="absolute inset-0 bg-slate-100 flex items-center justify-center">
+                <div className="absolute inset-0 bg-slate-900 flex items-center justify-center z-10">
                    <div className="text-amber-600/30 text-2xl animate-spin">✨</div>
                 </div>
               )}
               <img 
                 src={currentSrc} 
                 alt={card.name} 
-                className={`flex-1 object-cover w-full h-full transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                className={`flex-1 object-cover w-full h-full transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
                 onLoad={() => setIsLoading(false)}
                 onError={handleImgError}
               />
@@ -86,7 +88,6 @@ const Card: React.FC<CardProps> = ({
         </div>
       </div>
       
-      {/* Kartın Altındaki Pozisyon İsmi (Geçmiş, Şimdi vb.) - Bu alan kartın dışındadır */}
       {positionName && (
         <div className="absolute -bottom-8 left-0 right-0 z-10 text-center">
           <span className="inline-block text-[8px] md:text-[10px] font-cinzel text-amber-500 font-bold uppercase tracking-widest bg-slate-950/80 backdrop-blur-sm py-1 px-2 rounded border border-amber-600/20 shadow-lg whitespace-nowrap">

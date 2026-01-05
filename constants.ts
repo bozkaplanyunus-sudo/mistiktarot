@@ -11,10 +11,19 @@ const SUITS = ["Wands", "Cups", "Swords", "Pentacles"];
 const RANKS = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Page", "Knight", "Queen", "King"];
 
 /**
- * Minör Arkana Manuel Link Haritası
- * Kullanıcıdan gelen Google Drive linkleri doğrudan görüntülenebilir formata dönüştürülerek eklendi.
+ * BÜYÜK ARKANA (MAJOR ARCANA) LINKLERI
+ * Buraya elindeki diğer Google Drive linklerini aynı formatta ekleyebilirsin.
  */
-export const MINOR_ARCANA_LINKS_MAP: Record<string, string> = {
+export const MAJOR_ARCANA_LINKS: Record<string, string> = {
+  "Fool": "https://drive.google.com/uc?export=view&id=1jStlkTMmJpRwBMTbtCv0GyvT4B6ItLRM", // Örnek link
+  "Magician": "", // Burayı doldurabilirsin
+  // ... diğerleri
+};
+
+/**
+ * KÜÇÜK ARKANA (MINOR ARKANA) LINKLERI
+ */
+export const MINOR_ARCANA_LINKS: Record<string, string> = {
   // Değnek (Wands)
   "Ace of Wands": "https://drive.google.com/uc?export=view&id=1jStlkTMmJpRwBMTbtCv0GyvT4B6ItLRM",
   "2 of Wands": "https://drive.google.com/uc?export=view&id=1py472hrru5L-WGr8w4dGTL97CSQoOoRI",
@@ -80,9 +89,16 @@ export const MINOR_ARCANA_LINKS_MAP: Record<string, string> = {
   "King of Swords": "https://drive.google.com/uc?export=view&id=1Rb-Ktg2iN-NnGlPPeo8vbqsBbskYLktU",
 };
 
-const getRiderWaiteUrl = (name: string) => {
-  if (MINOR_ARCANA_LINKS_MAP[name]) return MINOR_ARCANA_LINKS_MAP[name];
+/**
+ * GÖRSEL ÇÖZÜMLEYİCİ
+ * Verilen kart ismi ve deste türüne göre en uygun görsel linkini döner.
+ */
+const getCardImageUrl = (name: string, deck: DeckType): string => {
+  // 1. Önce manuel link haritalarına bak (Rider-Waite bazlı linklerin varsa)
+  if (MAJOR_ARCANA_LINKS[name]) return MAJOR_ARCANA_LINKS[name];
+  if (MINOR_ARCANA_LINKS[name]) return MINOR_ARCANA_LINKS[name];
 
+  // 2. Yoksa GitHub Fallback'lerini kullan
   const majorIndex = MAJOR_ARCANA_NAMES.indexOf(name);
   let fileName = "";
   
@@ -101,54 +117,41 @@ const getRiderWaiteUrl = (name: string) => {
       fileName = `${suitMap[suit]}${rankMap[rank]}.jpg`;
     }
   }
+
+  // Deste türüne göre ana repo adresleri
+  if (deck === DeckType.MARSEILLE) {
+    return `https://raw.githubusercontent.com/Gideon-Stark/tarot-api/master/static/cards/${fileName}`;
+  }
+  
   return `https://raw.githubusercontent.com/ekelen/tarot/master/assets/cards/${fileName}`;
 };
 
-const getMarseilleUrl = (name: string) => {
-  if (MINOR_ARCANA_LINKS_MAP[name]) return MINOR_ARCANA_LINKS_MAP[name];
-  
-  const majorIndex = MAJOR_ARCANA_NAMES.indexOf(name);
-  if (majorIndex !== -1) {
-    const code = majorIndex.toString().padStart(2, '0');
-    return `https://raw.githubusercontent.com/Gideon-Stark/tarot-api/master/static/cards/m${code}.jpg`;
-  }
-  return getRiderWaiteUrl(name);
-};
-
-export const getFullDeck = (prefix: string): TarotCard[] => {
+export const getFullDeck = (prefix: DeckType): TarotCard[] => {
   const deck: TarotCard[] = [];
 
+  // Major Arcana oluştur
   MAJOR_ARCANA_NAMES.forEach((name, index) => {
-    let imageUrl = '';
-    if (prefix === DeckType.RIDER_WAITE) imageUrl = getRiderWaiteUrl(name);
-    else if (prefix === DeckType.MARSEILLE) imageUrl = getMarseilleUrl(name);
-    else {
-      imageUrl = `https://picsum.photos/seed/rumi-${index}-gold/400/700`;
-    }
-    
     deck.push({
       id: `${prefix}-major-${index}`,
       name: name,
       meaning: "...",
-      imageUrl: imageUrl
+      imageUrl: prefix === DeckType.RUMI 
+        ? `https://picsum.photos/seed/rumi-${index}-mystic/400/700` 
+        : getCardImageUrl(name, prefix)
     });
   });
 
+  // Minor Arcana oluştur
   SUITS.forEach((suit) => {
     RANKS.forEach((rank) => {
       const name = `${rank} of ${suit}`;
-      let imageUrl = '';
-      if (prefix === DeckType.RIDER_WAITE) imageUrl = getRiderWaiteUrl(name);
-      else if (prefix === DeckType.MARSEILLE) imageUrl = getMarseilleUrl(name);
-      else {
-        imageUrl = `https://picsum.photos/seed/rumi-${suit}-${rank}-mystic/400/700`;
-      }
-
       deck.push({
         id: `${prefix}-minor-${rank}-${suit}`,
         name: name,
         meaning: "...",
-        imageUrl: imageUrl
+        imageUrl: prefix === DeckType.RUMI 
+          ? `https://picsum.photos/seed/rumi-${suit}-${rank}/400/700` 
+          : getCardImageUrl(name, prefix)
       });
     });
   });

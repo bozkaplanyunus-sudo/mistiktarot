@@ -34,10 +34,15 @@ const Card: React.FC<CardProps> = ({
       setCurrentSrc(card.imageUrl);
       setIsLoading(true);
       setIsError(false);
+    } else if (card) {
+      // Görsel URL'si yoksa direkt hata durumuna geç
+      setIsError(true);
+      setIsLoading(false);
     }
   }, [card]);
 
   const handleImgError = () => {
+    console.warn(`Görsel yüklenemedi: ${card?.name}`);
     setIsError(true);
     setIsLoading(false);
   };
@@ -74,18 +79,22 @@ const Card: React.FC<CardProps> = ({
                 </div>
               )}
               
-              {!isError ? (
+              {!isError && currentSrc ? (
                 <img 
                   src={currentSrc} 
                   alt={card.name} 
                   className={`flex-1 object-cover w-full h-full transition-all duration-700 ${isLoading ? 'opacity-0 scale-110' : 'opacity-100 scale-100'}`}
                   onLoad={() => setIsLoading(false)}
                   onError={handleImgError}
+                  loading="lazy"
                 />
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center p-4 text-center bg-indigo-950/20">
-                  <div className="text-amber-500/20 text-5xl mb-2">✦</div>
-                  <div className="font-cinzel text-[8px] md:text-[10px] text-amber-500/40 font-bold uppercase tracking-widest">
+                  <div className="text-amber-500/30 text-5xl mb-2">✦</div>
+                  <div className="font-cinzel text-[10px] text-amber-500/60 font-bold uppercase tracking-widest mb-1">
+                    {card.name}
+                  </div>
+                  <div className="font-cinzel text-[8px] text-amber-600/40 uppercase tracking-tighter">
                     Mistik Mühür
                   </div>
                 </div>

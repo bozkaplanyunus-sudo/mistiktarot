@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { History, Star, Trash2, X, ChevronRight, Bookmark, MessageCircle, Globe, RefreshCw, Languages, Library } from 'lucide-react';
+import { History, Star, Trash2, X, ChevronRight, Bookmark, MessageCircle, Globe, RefreshCw, Languages, Library, Sparkles, Layers } from 'lucide-react';
 import { DeckType, SpreadType, CardSelection, ReadingState, SavedReading, Language, TarotCard } from './types';
 import { getFullDeck, SPREAD_CONFIGS } from './constants';
 import { translations } from './translations';
@@ -47,18 +47,19 @@ const DraggableRow: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       onMouseMove={onMouseMove}
       onMouseUp={onMouseUp}
       onMouseLeave={onMouseLeave}
-      className="w-full overflow-x-auto custom-scrollbar overflow-y-visible cursor-grab active:cursor-grabbing"
+      className="w-full overflow-x-auto custom-scrollbar overflow-y-visible cursor-grab active:cursor-grabbing py-2 md:py-4"
     >
-      <div className="flex items-center min-w-max px-10 pb-10 pt-6 pointer-events-none">
+      <div className="flex items-center min-w-max px-8 md:px-12 gap-2 md:gap-4">
         {React.Children.map(children, (child) => {
           if (React.isValidElement(child)) {
-            return React.cloneElement(child as React.ReactElement<any>, {
+            const element = child as React.ReactElement<any>;
+            return React.cloneElement(element, {
               onClick: (e: React.MouseEvent) => {
                 if (dragThresholdMet) {
                   e.preventDefault();
                   e.stopPropagation();
-                } else if (child.props.onClick) {
-                  child.props.onClick(e);
+                } else if (element.props.onClick) {
+                  element.props.onClick(e);
                 }
               }
             });
@@ -129,8 +130,7 @@ const App: React.FC = () => {
   };
 
   const finalizeReading = async (selectedCards: CardSelection[], deck: DeckType, spread: SpreadType) => {
-    // Önce stepi değiştiriyoruz, ama seçilen kartların state'e geçtiğinden emin oluyoruz
-    setState(prev => ({ ...prev, cards: selectedCards }));
+    setState(prev => ({ ...prev, cards: selectedCards, interpretation: '' }));
     setStep('reading');
     setLoading(true);
 
@@ -170,7 +170,6 @@ const App: React.FC = () => {
 
     const newCards = [...state.cards, newSelection];
     
-    // UI'daki slotları anında doldur
     setState(prev => ({ ...prev, cards: newCards }));
     setPickingDeck(prev => prev.filter(c => c.id !== card.id));
 
@@ -232,7 +231,8 @@ const App: React.FC = () => {
   const deckRows = useMemo(() => {
     const rows = [];
     const totalCards = pickingDeck.length;
-    const cardsPerRow = Math.ceil(totalCards / 3) || 1;
+    const rowCount = window.innerWidth < 768 ? 4 : 3;
+    const cardsPerRow = Math.ceil(totalCards / rowCount) || 1;
     for (let i = 0; i < totalCards; i += cardsPerRow) {
       rows.push(pickingDeck.slice(i, i + cardsPerRow));
     }
@@ -246,7 +246,7 @@ const App: React.FC = () => {
         <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-indigo-950 rounded-full blur-[150px]"></div>
       </div>
 
-      <header className="relative z-[500] w-full max-w-6xl mx-auto px-6 py-4 flex justify-between items-center bg-[#020617]/40 backdrop-blur-xl border-b border-white/5">
+      <header className="relative z-[500] w-full max-w-6xl mx-auto px-6 py-3 md:py-4 flex justify-between items-center bg-[#020617]/40 backdrop-blur-xl border-b border-white/5">
         <div className="w-10">
           <button onClick={reset} className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-600/10 border border-amber-600/20 hover:scale-110 transition-transform">
             <span className="text-sm">🔮</span>
@@ -300,26 +300,32 @@ const App: React.FC = () => {
                   <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button onClick={() => setStep('language')} className="flex items-center gap-2 text-xs text-slate-500 hover:text-amber-500 transition-all uppercase tracking-[0.2em] font-bold border border-white/5 px-6 py-2 rounded-full hover:bg-white/5">
-                  <Languages size={14} /> {t.changeLangBtn}
+                  <span className="text-sm">🌍</span> {t.changeLangBtn}
                 </button>
               </div>
             </motion.div>
           )}
 
           {step === 'deck' && (
-            <motion.div key="deck" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full px-6 py-10">
-              {[
-                { type: DeckType.RIDER_WAITE, title: t.deckRiderTitle, desc: t.deckRiderDesc, preview: 'https://cdn.jsdelivr.net/gh/ekelen/tarot@master/assets/cards/m00.jpg' },
-                { type: DeckType.MARSEILLE, title: t.deckMarseilleTitle, desc: t.deckMarseilleDesc, preview: 'https://cdn.jsdelivr.net/gh/Gideon-Stark/tarot-api@master/static/cards/m00.jpg' }
-              ].map((deck) => (
-                <motion.div key={deck.type} whileHover={{ y: -10 }} onClick={() => selectDeck(deck.type)} className="group bg-slate-900/50 border border-white/5 p-8 rounded-[2.5rem] cursor-pointer hover:border-amber-600/50 transition-all text-center shadow-2xl flex flex-col items-center">
-                  <div className="w-28 h-44 md:w-36 md:h-56 mb-8 rounded-xl border border-white/10 overflow-hidden bg-black/40 p-2">
-                    <img src={deck.preview} className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-500" alt="" />
+            <motion.div key="deck" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-4xl mx-auto text-center w-full px-6 py-6">
+              <Layers className="text-amber-500 mx-auto mb-6" size={32} />
+              <h2 className="font-cinzel text-2xl md:text-3xl mb-12 uppercase tracking-[0.2em] text-white/90">{t.selectDeck}</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                <button onClick={() => selectDeck(DeckType.RIDER_WAITE)} className="group p-8 bg-slate-900/40 border border-white/5 rounded-[2.5rem] hover:border-amber-600/50 hover:bg-slate-900 transition-all flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-amber-600/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">☀️</span>
                   </div>
-                  <h3 className="font-cinzel text-xl md:text-2xl text-amber-500 mb-3 uppercase tracking-widest">{deck.title}</h3>
-                  <p className="text-slate-500 text-xs italic leading-relaxed max-w-[200px]">{deck.desc}</p>
-                </motion.div>
-              ))}
+                  <h3 className="font-cinzel text-amber-500 text-lg uppercase font-bold tracking-widest mb-3">{t.deckRiderTitle}</h3>
+                  <p className="text-slate-500 text-xs leading-relaxed font-playfair italic">{t.deckRiderDesc}</p>
+                </button>
+                <button onClick={() => selectDeck(DeckType.MARSEILLE)} className="group p-8 bg-slate-900/40 border border-white/5 rounded-[2.5rem] hover:border-amber-600/50 hover:bg-slate-900 transition-all flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-amber-600/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">⚔️</span>
+                  </div>
+                  <h3 className="font-cinzel text-amber-500 text-lg uppercase font-bold tracking-widest mb-3">{t.deckMarseilleTitle}</h3>
+                  <p className="text-slate-500 text-xs leading-relaxed font-playfair italic">{t.deckMarseilleDesc}</p>
+                </button>
+              </div>
             </motion.div>
           )}
 
@@ -341,20 +347,20 @@ const App: React.FC = () => {
           )}
 
           {step === 'picking' && (
-            <motion.div key="picking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="relative w-full h-[calc(100vh-80px)] flex flex-col items-center overflow-hidden">
-              <div className="w-full max-w-4xl z-[150] pt-6 px-6 flex flex-col items-center shrink-0">
-                <div className="flex items-center gap-4 mb-4">
-                  <h2 className="font-cinzel text-xl md:text-3xl text-amber-500 uppercase tracking-widest font-bold">
+            <motion.div key="picking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="relative w-full h-[calc(100vh-60px)] flex flex-col items-center overflow-hidden">
+              <div className="w-full max-w-4xl z-[150] pt-2 md:pt-4 px-4 flex flex-col items-center shrink-0">
+                <div className="flex items-center gap-4 mb-2">
+                  <h2 className="font-cinzel text-lg md:text-2xl text-amber-500 uppercase tracking-widest font-bold">
                     {state.cards.length} <span className="text-slate-600">/</span> {currentConfig?.count}
                   </h2>
                 </div>
-                <div className="flex flex-wrap gap-2 justify-center max-w-full">
+                <div className="flex flex-wrap gap-1.5 md:gap-2 justify-center max-w-full">
                   {Array.from({ length: currentConfig?.count || 0 }).map((_, idx) => (
-                    <div key={idx} className={`relative w-10 h-14 md:w-16 md:h-24 rounded-lg border flex items-center justify-center transition-all duration-700 overflow-hidden ${state.cards[idx] ? 'border-amber-500/50 bg-amber-500/10 shadow-[0_0_15px_rgba(217,119,6,0.3)]' : 'border-dashed border-white/5 bg-white/2'}`}>
+                    <div key={idx} className={`relative w-8 h-12 md:w-14 md:h-20 rounded-lg border flex items-center justify-center transition-all duration-700 overflow-hidden ${state.cards[idx] ? 'border-amber-500/50 bg-amber-500/10 shadow-[0_0_15px_rgba(217,119,6,0.3)]' : 'border-dashed border-white/5 bg-white/2'}`}>
                       {state.cards[idx] ? (
-                        <Card card={state.cards[idx].card} isFlipped={false} className="w-full h-full opacity-100 scale-90" />
+                        <Card card={state.cards[idx].card} isFlipped={false} noHover className="w-full h-full opacity-100 scale-90" />
                       ) : (
-                        <div className="text-[6px] md:text-[8px] font-cinzel text-white/10 uppercase text-center font-bold px-1">
+                        <div className="text-[5px] md:text-[8px] font-cinzel text-white/10 uppercase text-center font-bold px-1">
                           {currentConfig ? (t.positions as any)[currentConfig.positions[idx]] : ""}
                         </div>
                       )}
@@ -363,31 +369,31 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex-1 w-full flex flex-col justify-center gap-0 overflow-hidden py-4">
+              <div className="flex-1 w-full flex flex-col justify-center gap-1.5 md:gap-3 overflow-hidden py-2 md:py-4">
                 {deckRows.map((row, rowIndex) => (
                   <motion.div 
                     key={rowIndex} 
-                    className="relative" 
-                    whileHover={{ zIndex: 1000 }}
+                    className="relative bg-white/2 border-y border-white/5" 
+                    whileHover={{ zIndex: 1000, backgroundColor: 'rgba(255,255,255,0.04)' }}
                   >
                     <DraggableRow>
                       {row.map((card) => (
                         <motion.div
                           key={card.id}
                           whileHover={{ 
-                            y: -40, 
-                            scale: 1.35, 
+                            y: -5, 
                             zIndex: 2000,
-                            transition: { type: 'spring', stiffness: 400, damping: 20 } 
+                            transition: { type: 'spring', stiffness: 400, damping: 25 } 
                           }}
-                          whileTap={{ scale: 0.9 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => onCardPick(card)}
-                          className="relative -ml-5 first:ml-0 cursor-pointer group pointer-events-auto"
+                          className="relative cursor-pointer group shrink-0"
                         >
                           <Card 
                             card={card}
                             isFlipped={false}
-                            className="w-14 h-20 md:w-20 md:h-30 shadow-2xl border border-white/10 group-hover:border-amber-500/100 transition-all pointer-events-none"
+                            noHover
+                            className="w-10 h-16 md:w-16 md:h-24 shadow-2xl border border-white/10 group-hover:border-amber-500/100 transition-all pointer-events-none"
                           />
                         </motion.div>
                       ))}
@@ -409,16 +415,40 @@ const App: React.FC = () => {
               <div className="flex flex-col items-center w-full max-w-5xl mx-auto px-4 py-8">
                 <div className="flex flex-wrap justify-center gap-x-10 gap-y-24 mb-24 px-4 w-full pt-16">
                   {state.cards.map((item, idx) => (
-                    <Card key={`${item.card.id}-${idx}`} card={item.card} isFlipped={true} isReversed={item.isReversed} positionName={item.positionName} delay={idx * 0.1} />
+                    <Card key={`${item.card.id}-${idx}`} card={item.card} isFlipped={true} isReversed={item.isReversed} positionName={item.positionName} delay={idx * 0.1} className="w-20 h-32 md:w-28 md:h-44" />
                   ))}
                 </div>
 
                 {loading && !state.interpretation ? (
-                  <div className="flex-1 flex flex-col items-center justify-center py-20 text-center w-full">
-                    <h2 className="font-cinzel text-2xl md:text-3xl text-amber-500 uppercase animate-pulse tracking-[0.4em] font-bold">
+                  <div className="flex-1 flex flex-col items-center justify-center py-24 text-center w-full relative">
+                    <motion.div 
+                      animate={{ 
+                        scale: [1, 1.2, 1],
+                        rotate: [0, 180, 360],
+                        opacity: [0.3, 0.6, 0.3]
+                      }} 
+                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute w-64 h-64 bg-amber-600/10 rounded-full blur-3xl -z-10"
+                    />
+                    <div className="mb-8">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                        className="inline-block p-4 border-2 border-dashed border-amber-600/30 rounded-full"
+                      >
+                         <Sparkles className="text-amber-500 animate-pulse" size={48} />
+                      </motion.div>
+                    </div>
+                    <motion.h2 
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="font-cinzel text-3xl md:text-5xl text-amber-500 uppercase tracking-[0.4em] font-bold"
+                    >
                       {t.drawingBtn}
-                    </h2>
-                    <p className="text-slate-500 font-cinzel text-xs mt-4 tracking-widest uppercase">Kaderin Işığı Yansıtılıyor...</p>
+                    </motion.h2>
+                    <p className="text-slate-500 font-cinzel text-xs mt-6 tracking-[0.3em] uppercase font-bold opacity-70">
+                      Kaderin Işığı Yansıtılıyor...
+                    </p>
                   </div>
                 ) : (
                   <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-10 mb-20">

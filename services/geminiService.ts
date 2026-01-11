@@ -19,11 +19,11 @@ export const getTarotInterpretation = async (
   cards: CardSelection[],
   language: Language
 ): Promise<string> => {
-  // Daha hızlı yanıt için flash modelini kullanıyoruz
   const model = 'gemini-3-flash-preview';
   
+  // Kart açıklamalarına görselleri de ekliyoruz ki AI bunlara referans verebilsin
   const cardsDescription = cards.map((c, i) => 
-    `${i+1}. Kart (${c.positionName}): ${c.card.name} ${c.isReversed ? '(Ters)' : '(Düz)'}`
+    `${i+1}. Kart (${c.positionName}): ${c.card.name} ${c.isReversed ? '(Ters)' : '(Düz)'} - Görsel Linki: ${c.card.imageUrl}`
   ).join('\n');
 
   const prompt = `
@@ -33,13 +33,18 @@ export const getTarotInterpretation = async (
     Kartlar:
     ${cardsDescription}
 
-    YAZIM VE FORMAT KURALLARI (BU KURALLARA UYMAK ZORUNLUDUR):
-    1. Tüm ana başlıklar ve alt başlıklar KESİNLİKLE kendi satırında, tamamen BÜYÜK HARFLERLE yazılmalıdır.
-    2. Başlıkların başında, sonunda veya içinde ASLA yıldız simgesi (*), alt tire (_), parıltı (✨), emoji veya herhangi bir Markdown işareti kullanma. Sadece saf metin kullan.
-    3. Başlıklardan sonra mutlaka bir boş satır bırak.
-    4. Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır.
-    5. Paragraflar arasında boşluk bırak.
-    6. Ton: Bilge, mistik ve derinlemesine.
+    GÖRSEL TALİMATI:
+    - Her kartın yorumunu yaparken, o kartın yanına veya yorumunun başına mutlaka ![Kart Adı](GÖRSEL_LINKI) formatında görseli ekle.
+    - Sadece sana yukarıda verilen "Görsel Linki" değerlerini kullan.
+    - Bir kart 'Ters' (Reversed) olarak çekildiğinde, yine o kartın düz hali için sana tanımlanan görsel linkini kullan. 
+    - Görseli Markdown formatında gösterirken, yorum kısmında '(Ters)' notunu düş. Yeni bir link arama, mevcut linki kullan.
+    - Metin içinde görsellerin görünmesi çok önemlidir.
+
+    YAZIM VE FORMAT KURALLARI:
+    1. Tüm ana başlıklar KESİNLİKLE kendi satırında, tamamen BÜYÜK HARFLERLE yazılmalıdır.
+    2. Başlıkların başında veya sonunda yıldız (*) veya başka Markdown işaretleri kullanma.
+    3. Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır.
+    4. Ton: Bilge, mistik ve derinlemesine.
   `;
 
   try {
@@ -67,14 +72,14 @@ export const getRumiFollowUpAnswer = async (
   
   const prompt = `
     Danışan Sorusu: "${question}"
-    Rumi Kartı: "${rumiCard.card.name}" ${rumiCard.isReversed ? '(Ters)' : '(Düz)'}
+    Rumi Kartı: "${rumiCard.card.name}" ${rumiCard.isReversed ? '(Ters)' : '(Düz)'} - Görsel: ${rumiCard.card.imageUrl}
 
     Sen Mevlana Celaleddin Rumi'nin bilgeliğini taşıyan bir rehbersin.
     
     YAZIM VE FORMAT KURALLARI:
-    1. Başlıklar sadece BÜYÜK HARFLERLE ve Markdown işareti (yıldız, alt tire vb.) olmadan yazılmalıdır.
-    2. Başlıklarda ASLA yıldız (*), parıltı, ikon veya emoji kullanma.
-    3. Cevabını şu üç başlık altında ver: GÖNÜL GÖZÜ, MESNEVİ'DEN HİKMET, CEVAP.
+    1. Yanıtın başında mutlaka Rumi kartının görselini ![Rumi](GÖRSEL) şeklinde ekle.
+    2. Cevabını şu üç başlık altında ver: GÖNÜL GÖZÜ, MESNEVİ'DEN HİKMET, CEVAP.
+    3. Bir kart 'Ters' (Reversed) olarak çekildiğinde, yine o kartın düz hali için sana tanımlanan görsel linkini kullan. 
     4. Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır.
   `;
 

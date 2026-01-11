@@ -13,6 +13,7 @@ interface CardProps {
   delay?: number;
   lang?: Language;
   noHover?: boolean;
+  noBorder?: boolean;
 }
 
 const Card: React.FC<CardProps> = ({ 
@@ -24,6 +25,7 @@ const Card: React.FC<CardProps> = ({
   className = "",
   delay = 0,
   noHover = false,
+  noBorder = false,
 }) => {
   const [currentSrc, setCurrentSrc] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +37,6 @@ const Card: React.FC<CardProps> = ({
       setIsLoading(true);
       setIsError(false);
     } else if (card) {
-      // Görsel URL'si yoksa direkt hata durumuna geç
       setIsError(true);
       setIsLoading(false);
     }
@@ -47,35 +48,38 @@ const Card: React.FC<CardProps> = ({
     setIsLoading(false);
   };
 
+  // Majör Arkana kartlarını tespit et (id: major-...)
+  const isMajor = card?.id.startsWith('major');
+
   return (
     <motion.div 
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay, duration: 0.5, ease: "easeOut" }}
-      whileHover={noHover ? {} : { y: -8, zIndex: 50 }}
+      whileHover={noHover ? {} : { y: -5 }}
       className={`relative perspective-1000 cursor-pointer shrink-0 ${className}`}
       onClick={onClick}
     >
-      <div className={`card-inner relative w-full h-full duration-[800ms] ease-in-out shadow-[0_20px_50px_rgba(0,0,0,0.5)] ${isFlipped ? 'card-flipped' : ''}`}>
+      <div className={`card-inner relative w-full h-full duration-[800ms] ease-in-out ${isFlipped ? 'card-flipped' : ''}`}>
         
-        {/* KART ARKASI: Mistik Geometrik Desen */}
-        <div className="card-back absolute inset-0 bg-[#0a0f1e] border-[3px] border-amber-600/50 rounded-xl flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l30 30-30 30L0 30z' fill='%23d97706' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")` }}></div>
-          <div className="relative w-full h-full flex items-center justify-center">
-             <div className="w-4/5 h-4/5 border border-amber-600/20 rounded-full animate-[spin_20s_linear_infinite]"></div>
-             <div className="absolute text-amber-500/40 text-4xl font-serif">◈</div>
-          </div>
-          <div className="absolute inset-2 border border-amber-600/10 rounded-lg"></div>
+        {/* KART ARKASI */}
+        <div className={`card-back absolute inset-0 rounded-lg flex items-center justify-center overflow-hidden ${noBorder ? 'bg-transparent' : 'bg-[#0a0f1e] border border-amber-600/30'}`}>
+          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l30 30-30 30L0 30z' fill='%23d97706' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")` }}></div>
+          {!noBorder && (
+            <div className="relative w-full h-full flex items-center justify-center">
+               <div className="w-4/5 h-4/5 border border-amber-600/10 rounded-full"></div>
+               <div className="absolute text-amber-500/20 text-2xl font-serif">◈</div>
+            </div>
+          )}
         </div>
 
-        {/* KART ÖNÜ: Altın Çerçeve ve Görsel */}
-        <div className={`card-front absolute inset-0 bg-slate-950 rounded-xl overflow-hidden border-[3px] border-amber-500/80 flex flex-col ${isReversed ? 'rotate-180' : ''}`}>
+        {/* KART ÖNÜ */}
+        <div className={`card-front absolute inset-0 rounded-lg overflow-hidden flex flex-col ${isReversed ? 'rotate-180' : ''} ${noBorder ? 'bg-transparent border-none' : 'bg-[#020617] border border-amber-500/50'}`}>
           {card && (
-            <div className="relative flex-1 w-full h-full bg-[#020617] flex flex-col overflow-hidden">
+            <div className={`relative flex-1 w-full h-full flex flex-col overflow-hidden ${noBorder ? 'p-0' : 'p-1 md:p-1.5'}`}>
               {isLoading && (
                 <div className="absolute inset-0 bg-slate-900 flex flex-col items-center justify-center z-10">
-                   <div className="w-8 h-8 border-2 border-amber-600/20 border-t-amber-500 rounded-full animate-spin mb-2"></div>
-                   <div className="text-[6px] font-cinzel text-amber-500 uppercase tracking-widest animate-pulse">Visioning...</div>
+                   <div className="w-6 h-6 border-2 border-amber-600/20 border-t-amber-500 rounded-full animate-spin"></div>
                 </div>
               )}
               
@@ -83,19 +87,17 @@ const Card: React.FC<CardProps> = ({
                 <img 
                   src={currentSrc} 
                   alt={card.name} 
-                  className={`flex-1 object-cover w-full h-full transition-all duration-700 ${isLoading ? 'opacity-0 scale-110' : 'opacity-100 scale-100'}`}
+                  /* Majör kartlar için padding (p-2) ekleyerek onları minör kartlarla görsel olarak dengeliyoruz */
+                  className={`flex-1 object-contain w-full h-full transition-all duration-700 ${isLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'} ${isMajor ? 'p-2' : 'p-0.5'}`}
                   onLoad={() => setIsLoading(false)}
                   onError={handleImgError}
                   loading="lazy"
                 />
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center p-4 text-center bg-indigo-950/20">
-                  <div className="text-amber-500/30 text-5xl mb-2">✦</div>
-                  <div className="font-cinzel text-[10px] text-amber-500/60 font-bold uppercase tracking-widest mb-1">
+                  <div className="text-amber-500/20 text-4xl mb-2">✦</div>
+                  <div className="font-cinzel text-[8px] text-amber-500/40 font-bold uppercase tracking-widest">
                     {card.name}
-                  </div>
-                  <div className="font-cinzel text-[8px] text-amber-600/40 uppercase tracking-tighter">
-                    Mistik Mühür
                   </div>
                 </div>
               )}
@@ -103,18 +105,6 @@ const Card: React.FC<CardProps> = ({
           )}
         </div>
       </div>
-      
-      {positionName && (
-        <div className="absolute -bottom-10 left-0 right-0 z-10 text-center pointer-events-none">
-          <motion.span 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-block text-[8px] md:text-[10px] font-cinzel text-white font-bold uppercase tracking-[0.2em] bg-amber-600 py-1 px-3 rounded-full shadow-[0_10px_20px_rgba(217,119,6,0.4)] whitespace-nowrap border border-white/20"
-          >
-            {positionName}
-          </motion.span>
-        </div>
-      )}
     </motion.div>
   );
 };

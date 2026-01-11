@@ -1,4 +1,3 @@
-
 import { TarotCard, SpreadType, DeckType } from './types';
 
 export const MAJOR_ARCANA_NAMES = [
@@ -11,157 +10,171 @@ const SUITS = ["Wands", "Cups", "Swords", "Pentacles"];
 const RANKS = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Page", "Knight", "Queen", "King"];
 
 /**
- * BÜYÜK ARKANA (MAJOR ARCANA) LINKLERI
- * Buraya elindeki diğer Google Drive linklerini aynı formatta ekleyebilirsin.
+ * Google Drive linkini doğrudan görünebilir thumbnail linkine çevirir.
  */
+const transformDriveUrl = (url: string): string => {
+  if (!url || !url.includes('drive.google.com')) return url;
+  const match = url.match(/id=([^&]+)/);
+  if (match && match[1]) {
+    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w600`;
+  }
+  return url;
+};
+
 export const MAJOR_ARCANA_LINKS: Record<string, string> = {
-  "Fool": "https://drive.google.com/uc?export=view&id=1jStlkTMmJpRwBMTbtCv0GyvT4B6ItLRM", // Örnek link
-  "Magician": "", // Burayı doldurabilirsin
-  // ... diğerleri
+  "Fool": "https://i.postimg.cc/cKXvc63f/0-joker.jpg",
+  "Magician": "https://i.postimg.cc/gXjntdyX/1-buyucu.jpg",
+  "High Priestess": "https://i.postimg.cc/k6GBY9NS/2-azize.jpg",
+  "Empress": "https://i.postimg.cc/G8tHgrPs/3-imparatorice.jpg",
+  "Emperor": "https://i.postimg.cc/G8tHgrPT/4-imparator.jpg",
+  "Hierophant": "https://i.postimg.cc/ftyJqZ7j/5-aziz.jpg",
+  "Lovers": "https://i.postimg.cc/MMHv3x0D/6-asiklar.jpg",
+  "Chariot": "https://i.postimg.cc/cgCrkZ77/7-araba.jpg",
+  "Strength": "https://i.postimg.cc/62qybwVh/8-guc.jpg",
+  "Hermit": "https://i.postimg.cc/N9F5CY8n/9-ermis.jpg",
+  "Wheel of Fortune": "https://i.postimg.cc/KkjRpF7V/10-kader-carki.jpg",
+  "Justice": "https://i.postimg.cc/BLbX7s5V/11-adalet.jpg",
+  "Hanged Man": "https://i.postimg.cc/zbvV25wP/12-asilan-adam.jpg",
+  "Death": "https://i.postimg.cc/zbQ39Mpx/13-olum.jpg",
+  "Temperance": "https://i.postimg.cc/cgz6VjTk/14-denge.jpg",
+  "Devil": "https://i.postimg.cc/S2Pjw5V3/15-seytan.jpg",
+  "Tower": "https://i.postimg.cc/dkfDzXnb/16-kule.jpg",
+  "Star": "https://i.postimg.cc/34qWP6nM/17-yildiz.jpg",
+  "Moon": "https://i.postimg.cc/JDFt9gPC/18-ay.jpg",
+  "Sun": "https://i.postimg.cc/JDFt9gPL/19-gunes.jpg",
+  "Judgement": "https://i.postimg.cc/tZc7Lf2p/20-mahkeme.jpg",
+  "World": "https://i.postimg.cc/gX7rf5NY/21-dunya.jpg"
 };
 
-/**
- * KÜÇÜK ARKANA (MINOR ARKANA) LINKLERI
- */
 export const MINOR_ARCANA_LINKS: Record<string, string> = {
-  // Değnek (Wands)
-  "Ace of Wands": "https://drive.google.com/uc?export=view&id=1jStlkTMmJpRwBMTbtCv0GyvT4B6ItLRM",
-  "2 of Wands": "https://drive.google.com/uc?export=view&id=1py472hrru5L-WGr8w4dGTL97CSQoOoRI",
-  "3 of Wands": "https://drive.google.com/uc?export=view&id=10PNy7KD9XDFG_vAO-9mkrd8DGqM_bvBD",
-  "4 of Wands": "https://drive.google.com/uc?export=view&id=14TzOuR_9GvF5PEl0ka-Do5CSOZnfidNe",
-  "5 of Wands": "https://drive.google.com/uc?export=view&id=1Nc0JxI2_RWUMKKKXGd-iXQeV31HW1deo",
-  "6 of Wands": "https://drive.google.com/uc?export=view&id=13jIwpH_j15f8JRQyLDGfoSLyVr4reTI_",
-  "7 of Wands": "https://drive.google.com/uc?export=view&id=1oqBfWxELknU0dFvvlcU__0GLTp3fsWus",
-  "8 of Wands": "https://drive.google.com/uc?export=view&id=1qnZvVagPTZHqKWBP4JGMX1ymxpwiQxJg",
-  "9 of Wands": "https://drive.google.com/uc?export=view&id=1FrY-9yGWv56ZIoshmRxGQpSOiFIUPO3f",
-  "10 of Wands": "https://drive.google.com/uc?export=view&id=1vjAoQ9dR7H7q0Imxif2Hh1LyfVuJuQPv",
-  "Page of Wands": "https://drive.google.com/uc?export=view&id=1M6hb-X7PknVZ-M5cpwsIXZeQkKi-F-bS",
-  "Knight of Wands": "https://drive.google.com/uc?export=view&id=1EfxSlriNkEg0YFsv5dwJi9ZU4yV8dxxn",
-  "Queen of Wands": "https://drive.google.com/uc?export=view&id=1KbfXpLLFLng3uMT95pJTjvcO-BBudPJE",
-  "King of Wands": "https://drive.google.com/uc?export=view&id=1MU4hzN33rb0GHilKH1xygpq7sM-NyZXt",
+  // Değnek (Wands) serisi
+  "Ace of Wands": "https://i.postimg.cc/DSth3hKd/01-degnek-asi.png",
+  "2 of Wands": "https://i.postimg.cc/Bjd3f3Gw/02-degnek-ikilisi.png",
+  "3 of Wands": "https://i.postimg.cc/NymcgngC/03-degnek-uclusu.png",
+  "4 of Wands": "https://i.postimg.cc/bGkhz5z6/04-degnek-dortlusu.png",
+  "5 of Wands": "https://i.postimg.cc/sB7rVLVT/05-degnek-beslisi.png",
+  "6 of Wands": "https://i.postimg.cc/cKwSszsz/06-degnek-altilisi.png",
+  "7 of Wands": "https://i.postimg.cc/Ff3496rQ/07-degnek-yedilisi.png",
+  "8 of Wands": "https://i.postimg.cc/CZkgF2h0/08-degnek-sekizlisi.png",
+  "9 of Wands": "https://i.postimg.cc/PLYjt7Xh/09-degnek-dokuzlusu.png",
+  "10 of Wands": "https://i.postimg.cc/R3KBMYS4/10-degnek-onlusu.png",
+  "Page of Wands": "https://i.postimg.cc/3ymTKq88/11-degnek-prensi.png",
+  "Knight of Wands": "https://i.postimg.cc/cKwSszx4/12-degnek-sovalyesi.png",
+  "Queen of Wands": "https://i.postimg.cc/3ymTKq8w/13-degnek-kralicesi.png",
+  "King of Wands": "https://i.postimg.cc/qtyTkFJR/14-degnek-krali.png",
 
-  // Kupa (Cups)
-  "Ace of Cups": "https://drive.google.com/uc?export=view&id=1TsQBc21e-OwXmqoU4LwC6Zm0P6o_sqSf",
-  "2 of Cups": "https://drive.google.com/uc?export=view&id=1EYk94fFRO3CKRpHv5DiAPlkzHsqC0sue",
-  "3 of Cups": "https://drive.google.com/uc?export=view&id=1Zq1wlybkDfj5pTtZHI2Jstrf7OBA9ovd",
-  "4 of Cups": "https://drive.google.com/uc?export=view&id=1cmwPZGm0jx3HKEkGfrW5aqrycCDB3_qz",
-  "5 of Cups": "https://drive.google.com/uc?export=view&id=1RcwtLdnOuw0-csCM4SL6ZHqM2DIj0MIS",
-  "6 of Cups": "https://drive.google.com/uc?export=view&id=1M2W4qbEg0_dKtsI36o4-sdVlBlhBxa2X",
-  "7 of Cups": "https://drive.google.com/uc?export=view&id=1tmhaTbhdAhqfYmVtcGC8sn0wxsRagbv9",
-  "8 of Cups": "https://drive.google.com/uc?export=view&id=1VkyDac_vCx1S7KAirwz4XAO15b06vxNw",
-  "9 of Cups": "https://drive.google.com/uc?export=view&id=1k5Fbf2KXTZzLiLa-s7VAOEdWRpiOIV28",
-  "10 of Cups": "https://drive.google.com/uc?export=view&id=18kQPjeC9K_o5zLoHoLqunNaRe8kJRRqF",
-  "Page of Cups": "https://drive.google.com/uc?export=view&id=14JXHYs81n3yOn0NTRf_jYT-r-9LE2zoo",
-  "Knight of Cups": "https://drive.google.com/uc?export=view&id=1j3uVlK2bIr2nzCVbkWSIMbitVambGA2d",
-  "Queen of Cups": "https://drive.google.com/uc?export=view&id=15TL3AhckV2D7ZAhHngnXS5rhHtRv3Akd",
-  "King of Cups": "https://drive.google.com/uc?export=view&id=1eyyfCYtkvZ_O8pAwCBHgfA_hGIpU5Ynm",
+  // Kupa (Cups) serisi
+  "Ace of Cups": "https://i.postimg.cc/NKvD3Cz8/01-kupa-asi.png",
+  "2 of Cups": "https://i.postimg.cc/0z1nTXBf/02-kupa-ikilisi.png",
+  "3 of Cups": "https://i.postimg.cc/21NGs9KG/03-kupa-uclusu.png",
+  "4 of Cups": "https://i.postimg.cc/G4nKWg5M/04-kupa-dortlusu.png",
+  "5 of Cups": "https://i.postimg.cc/pmMCwc6s/05-kupa-beslisi.png",
+  "6 of Cups": "https://i.postimg.cc/sMPmsPkJ/06-kupa-altilisi.png",
+  "7 of Cups": "https://i.postimg.cc/rDGjMGBJ/07-kupa-yedilisi.png",
+  "8 of Cups": "https://i.postimg.cc/k2NsqN0s/08-kupa-sekizlisi.png",
+  "9 of Cups": "https://i.postimg.cc/9DPbCP6J/09-kupa-dokuzlusu.png",
+  "10 of Cups": "https://i.postimg.cc/nXK2pKyd/10-kupa-onlusu.png",
+  "Page of Cups": "https://i.postimg.cc/VJ9gm9xG/11-kupa-prensi.png",
+  "Knight of Cups": "https://i.postimg.cc/CRC7SC3Q/12-kupa-sovalyesi.png",
+  "Queen of Cups": "https://i.postimg.cc/NK8DB83n/13-kupa-kralicesi.png",
+  "King of Cups": "https://i.postimg.cc/nXK2pKyN/14-kupa-krali.png",
+  
+  // Tılsım (Pentacles) serisi
+  "Ace of Pentacles": "https://i.postimg.cc/HJ7wZwpr/tilsim-asi.png",
+  "2 of Pentacles": "https://i.postimg.cc/phbDgmT5/tilsim-ikilisi.png",
+  "3 of Pentacles": "https://i.postimg.cc/PpsmBCxR/tilsim-uclusu.png",
+  "4 of Pentacles": "https://i.postimg.cc/mcFYXYbc/tilsim-dortlusu.png",
+  "5 of Pentacles": "https://i.postimg.cc/zLRCtCJh/tilsim-beslisi.png",
+  "6 of Pentacles": "https://i.postimg.cc/bG2xCxzy/tilsim-altilisi.png",
+  "7 of Pentacles": "https://i.postimg.cc/yg4FwDd5/tilsim-yedilisi.png",
+  "8 of Pentacles": "https://i.postimg.cc/xJDKWXC6/tilsim-sekizlisi.png",
+  "9 of Pentacles": "https://i.postimg.cc/d7T2H2qT/tilsim-dokuzlusu.png",
+  "10 of Pentacles": "https://i.postimg.cc/47kzrYdp/tilsim-onlusu.png",
+  "Page of Pentacles": "https://i.postimg.cc/Fd5j2YRp/tilsim-prensi.png",
+  "Knight of Pentacles": "https://i.postimg.cc/ZBtr1WRf/tilsim-sovalyesi.png",
+  "Queen of Pentacles": "https://i.postimg.cc/tZQhLsTW/tilsim-kralicesi.png",
+  "King of Pentacles": "https://i.postimg.cc/cgyQVvHY/tilsim-krali.png",
 
-  // Tılsım (Pentacles)
-  "Ace of Pentacles": "https://drive.google.com/uc?export=view&id=1b3Q8K78ccXD2o7wx0OY7pVFHoXjNxrs1",
-  "2 of Pentacles": "https://drive.google.com/uc?export=view&id=1stxLOrGofW1Nc3qbm3sE9DRD8irWdWmU",
-  "3 of Pentacles": "https://drive.google.com/uc?export=view&id=19meTqgQsuczquDjvnCUpmIbd1LCgh-9_",
-  "4 of Pentacles": "https://drive.google.com/uc?export=view&id=1mkeRZdKHUfIILVljD2WyMqfM8z9wpyMM",
-  "5 of Pentacles": "https://drive.google.com/uc?export=view&id=1IURdT9iCVte_h1Kfr4RTUoxPJkUtyQLg",
-  "6 of Pentacles": "https://drive.google.com/uc?export=view&id=1malWOWEg8KvYOzWBOrCNl1crxEsYfSn8",
-  "7 of Pentacles": "https://drive.google.com/uc?export=view&id=1IcV5Ean8EGG6UvzhSakPw7kg161L5uWf",
-  "8 of Pentacles": "https://drive.google.com/uc?export=view&id=12itvQnv4sWPtrGfonk-2-hjfZOhACoSM",
-  "9 of Pentacles": "https://drive.google.com/uc?export=view&id=17jxel9hd8vOWBMdDotXggbBC_dpzFAf_",
-  "10 of Pentacles": "https://drive.google.com/uc?export=view&id=1_tQSuaxgBM-DjwFsEWRExMq0NBPkURhq",
-  "Page of Pentacles": "https://drive.google.com/uc?export=view&id=1tlzRFNyxyagDS2yZNUF2gRQFq8IM2MRr",
-  "Knight of Pentacles": "https://drive.google.com/uc?export=view&id=1TWYZwchteheQZgYaHrvYeG8z2Migqnis",
-  "Queen of Pentacles": "https://drive.google.com/uc?export=view&id=1p0ovaanuMpBXYJoLfc-oXMtjdagxj34p",
-  "King of Pentacles": "https://drive.google.com/uc?export=view&id=1B6AuRYDZSPbMSRHrb649ZWrs7om_Lx6p",
-
-  // Kılıç (Swords)
-  "Ace of Swords": "https://drive.google.com/uc?export=view&id=1PJ66l-VHYOtVpp6vczqektZfjYjfF6OX",
-  "2 of Swords": "https://drive.google.com/uc?export=view&id=1Mnm-u0jq387ExwWQyoWY8n89fh48dSen",
-  "3 of Swords": "https://drive.google.com/uc?export=view&id=1hCTH_XdsIo5Q3BJpWqhOMbCarUZ2FNq3",
-  "4 of Swords": "https://drive.google.com/uc?export=view&id=1rsvUf4NorYE2Pm5e1oKq99DbdJ5sZV3P",
-  "5 of Swords": "https://drive.google.com/uc?export=view&id=15cca7skfMSyLPN-b200HtH71kbUarnGe",
-  "6 of Swords": "https://drive.google.com/uc?export=view&id=1EvBn3ED9XolrcU8BbaawjyeSdh6ReT63",
-  "7 of Swords": "https://drive.google.com/uc?export=view&id=1S5jYmbS6JMSBcgAzKdgvFmZvwAGgn33f",
-  "8 of Swords": "https://drive.google.com/uc?export=view&id=1f5lErB9AJbeIuSwHRM4xT6Qj3GvszqTU",
-  "9 of Swords": "https://drive.google.com/uc?export=view&id=1XhKqrwm429qAqyHI-DU3jX9iNVqG0y-f",
-  "10 of Swords": "https://drive.google.com/uc?export=view&id=1z2o_olfWyWL0fQZhP_eK-Tb6qwSJ7L6a",
-  "Page of Swords": "https://drive.google.com/uc?export=view&id=1nNF0vajABEK4H_yWTGvBnsb1a9tV1lZL",
-  "Knight of Swords": "https://drive.google.com/uc?export=view&id=1EjSDzfUWJgqcMleXTLfqTSep6w1voATD",
-  "Queen of Swords": "https://drive.google.com/uc?export=view&id=1gQEIPQ6gPxqVY-daIHYceNQsu9fX3xCF",
-  "King of Swords": "https://drive.google.com/uc?export=view&id=1Rb-Ktg2iN-NnGlPPeo8vbqsBbskYLktU",
+  // Kılıç (Swords) serisi
+  "Ace of Swords": "https://i.postimg.cc/2qw0FdTd/01-kilic-asi.png",
+  "2 of Swords": "https://i.postimg.cc/t15BtdDk/02-kilic-ikilisi.png",
+  "3 of Swords": "https://i.postimg.cc/p9ZsYQkq/03-kilic-uclusu.png",
+  "4 of Swords": "https://i.postimg.cc/Q9d06Bn1/04-kilic-dortlusu.png",
+  "5 of Swords": "https://i.postimg.cc/qhvjmtZ2/05-kilic-beslisi.png",
+  "6 of Swords": "https://i.postimg.cc/ftRBH3g7/06-kilic-altilisi.png",
+  "7 of Swords": "https://i.postimg.cc/HckBSJP3/07-kilic-yedilisi.png",
+  "8 of Swords": "https://i.postimg.cc/TL3CkyHk/08-kilic-sekizlisi.png",
+  "9 of Swords": "https://i.postimg.cc/vgZ3P1S2/09-kilic-dokuzlusu.png",
+  "10 of Swords": "https://i.postimg.cc/mzg8dc6n/10-kilic-onlusu.png",
+  "Page of Swords": "https://i.postimg.cc/CBxmvZQp/11-kilic-prensi.png",
+  "Knight of Swords": "https://i.postimg.cc/vgZ3P1Nd/12-kilic-sovalyesi.png",
+  "Queen of Swords": "https://i.postimg.cc/9RQJx4n2/13-kilic-kralicesi.png",
+  "King of Swords": "https://i.postimg.cc/R6ZXP3D4/14-kilic-krali.png",
 };
 
 /**
- * GÖRSEL ÇÖZÜMLEYİCİ
- * Verilen kart ismi ve deste türüne göre en uygun görsel linkini döner.
+ * Kart ismine ve deste türüne göre görsel linkini döndürür.
  */
-const getCardImageUrl = (name: string, deck: DeckType): string => {
-  // 1. Önce manuel link haritalarına bak (Rider-Waite bazlı linklerin varsa)
-  if (MAJOR_ARCANA_LINKS[name]) return MAJOR_ARCANA_LINKS[name];
-  if (MINOR_ARCANA_LINKS[name]) return MINOR_ARCANA_LINKS[name];
-
-  // 2. Yoksa GitHub Fallback'lerini kullan
-  const majorIndex = MAJOR_ARCANA_NAMES.indexOf(name);
-  let fileName = "";
-  
-  if (majorIndex !== -1) {
-    fileName = `m${majorIndex.toString().padStart(2, '0')}.jpg`;
-  } else {
-    const parts = name.split(' of ');
-    if (parts.length === 2) {
-      const rank = parts[0];
-      const suit = parts[1];
-      const suitMap: Record<string, string> = { "Wands": "w", "Cups": "c", "Swords": "s", "Pentacles": "p" };
-      const rankMap: Record<string, string> = {
-        "Ace": "01", "2": "02", "3": "03", "4": "04", "5": "05", "6": "06", "7": "07",
-        "8": "08", "9": "09", "10": "10", "Page": "11", "Knight": "12", "Queen": "13", "King": "14"
-      };
-      fileName = `${suitMap[suit]}${rankMap[rank]}.jpg`;
-    }
+export const getCardImageUrl = (name: string, deck: DeckType): string => {
+  let url = "";
+  if (MAJOR_ARCANA_LINKS[name]) {
+    url = MAJOR_ARCANA_LINKS[name];
+  } else if (MINOR_ARCANA_LINKS[name]) {
+    url = MINOR_ARCANA_LINKS[name];
   }
-
-  // Deste türüne göre ana repo adresleri
-  if (deck === DeckType.MARSEILLE) {
-    return `https://raw.githubusercontent.com/Gideon-Stark/tarot-api/master/static/cards/${fileName}`;
-  }
-  
-  return `https://raw.githubusercontent.com/ekelen/tarot/master/assets/cards/${fileName}`;
+  return transformDriveUrl(url);
 };
 
-export const getFullDeck = (prefix: DeckType): TarotCard[] => {
-  const deck: TarotCard[] = [];
-
-  // Major Arcana oluştur
+/**
+ * Seçilen deste türüne göre tüm kartları (78 kart) oluşturur.
+ */
+export const getFullDeck = (deckType: DeckType): TarotCard[] => {
+  const cards: TarotCard[] = [];
+  
+  // Büyük Arkana (Majors)
   MAJOR_ARCANA_NAMES.forEach((name, index) => {
-    deck.push({
-      id: `${prefix}-major-${index}`,
+    cards.push({
+      id: `major-${index}`,
       name: name,
-      meaning: "...",
-      imageUrl: prefix === DeckType.RUMI 
-        ? `https://picsum.photos/seed/rumi-${index}-mystic/400/700` 
-        : getCardImageUrl(name, prefix)
+      meaning: "",
+      imageUrl: getCardImageUrl(name, deckType)
     });
   });
 
-  // Minor Arcana oluştur
-  SUITS.forEach((suit) => {
-    RANKS.forEach((rank) => {
+  // Küçük Arkana (Minors)
+  SUITS.forEach(suit => {
+    RANKS.forEach(rank => {
       const name = `${rank} of ${suit}`;
-      deck.push({
-        id: `${prefix}-minor-${rank}-${suit}`,
+      cards.push({
+        id: `minor-${rank}-${suit}`,
         name: name,
-        meaning: "...",
-        imageUrl: prefix === DeckType.RUMI 
-          ? `https://picsum.photos/seed/rumi-${suit}-${rank}/400/700` 
-          : getCardImageUrl(name, prefix)
+        meaning: "",
+        imageUrl: getCardImageUrl(name, deckType)
       });
     });
   });
 
-  return deck;
+  return cards;
 };
 
-export const SPREAD_CONFIGS = {
-  [SpreadType.THREE_CARD]: { count: 3, majorCount: 1, positions: ["past", "present", "future"] },
-  [SpreadType.SIX_CARD]: { count: 6, majorCount: 2, positions: ["you", "expectation", "obstacles", "path", "mind", "result"] },
-  [SpreadType.NINE_CARD]: { count: 9, majorCount: 3, positions: ["inner", "outer", "hopes", "fears", "nearPast", "present", "nearFuture", "potential", "result"] },
-  [SpreadType.CELTIC_CROSS]: { count: 10, majorCount: 5, positions: ["essence", "obstacles", "consciousness", "subconscious", "past", "future", "self", "environment", "hopes", "result"] }
+/**
+ * Açılım türlerinin konfigürasyonlarını (kart sayısı ve pozisyon isimleri) tutar.
+ */
+export const SPREAD_CONFIGS: Record<SpreadType, { count: number; positions: string[] }> = {
+  [SpreadType.THREE_CARD]: { 
+    count: 3, 
+    positions: ['past', 'present', 'future'] 
+  },
+  [SpreadType.SIX_CARD]: { 
+    count: 6, 
+    positions: ['you', 'expectation', 'obstacles', 'path', 'mind', 'result'] 
+  },
+  [SpreadType.NINE_CARD]: { 
+    count: 9, 
+    positions: ['inner', 'outer', 'hopes', 'fears', 'nearPast', 'nearFuture', 'potential', 'essence', 'consciousness'] 
+  },
+  [SpreadType.CELTIC_CROSS]: { 
+    count: 10, 
+    positions: ['self', 'obstacles', 'consciousness', 'subconscious', 'nearPast', 'nearFuture', 'you', 'environment', 'hopes', 'result'] 
+  }
 };

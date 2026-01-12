@@ -7,7 +7,6 @@ export enum Language {
 
 export enum DeckType {
   RIDER_WAITE = 'Rider-Waite',
-  MARSEILLE = 'Marsilya',
   RUMI = 'Rumi'
 }
 
@@ -51,6 +50,7 @@ export interface SavedReading {
   interpretation: string;
   followUps: FollowUp[];
   isFavorite: boolean;
+  userIntent?: string;
 }
 
 export interface ReadingState {
@@ -60,4 +60,5 @@ export interface ReadingState {
   interpretation: string;
   questionsRemaining: number;
   followUpQuestions: FollowUp[];
+  userIntent: string;
 }

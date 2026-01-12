@@ -17,83 +17,93 @@ export const getTarotInterpretation = async (
   deck: DeckType,
   spread: SpreadType,
   cards: CardSelection[],
-  language: Language
+  language: Language,
+  userIntent: string
 ): Promise<string> => {
-  const model = 'gemini-3-flash-preview';
+  const model = 'gemini-3-pro-preview';
   
-  // Kart açıklamalarına görselleri de ekliyoruz ki AI bunlara referans verebilsin
   const cardsDescription = cards.map((c, i) => 
     `${i+1}. Kart (${c.positionName}): ${c.card.name} ${c.isReversed ? '(Ters)' : '(Düz)'} - Görsel Linki: ${c.card.imageUrl}`
   ).join('\n');
+
+  const intentContext = userIntent 
+    ? `Kullanıcının niyeti/sorusu: "${userIntent}"\nLütfen yorumu bu niyet çerçevesinde, kullanıcıya özel bir rehberlik sunacak şekilde derinleştir.`
+    : "Genel bir enerji okuması yap.";
 
   const prompt = `
     Aşağıdaki tarot açılımını yorumla:
     Deste: ${deck}
     Açılım: ${spread}
+    ${intentContext}
+
     Kartlar:
     ${cardsDescription}
 
-    GÖRSEL TALİMATI:
-    - Her kartın yorumunu yaparken, o kartın yanına veya yorumunun başına mutlaka ![Kart Adı](GÖRSEL_LINKI) formatında görseli ekle.
-    - Sadece sana yukarıda verilen "Görsel Linki" değerlerini kullan.
-    - Bir kart 'Ters' (Reversed) olarak çekildiğinde, yine o kartın düz hali için sana tanımlanan görsel linkini kullan. 
-    - Görseli Markdown formatında gösterirken, yorum kısmında '(Ters)' notunu düş. Yeni bir link arama, mevcut linki kullan.
-    - Metin içinde görsellerin görünmesi çok önemlidir.
+    # KRİTİK TALİMATLAR
+    
+    1. AYRIŞTIRMA ADIMI: Bir kart seçildiğinde (örneğin: "Ters Joker" veya "Joker - Ters"), önce "Ters" ibaresini kartın isminden ayır ve kartın kök adını (Örn: "Joker") bul.
+    
+    2. GÖRSEL BULMA: Bulduğun bu kök adına karşılık gelen PostImages linkini sana yukarıda sağlanan "Görsel Linki" değerlerinden sorgula.
+    
+    3. SEMBOLİK YORUMLAMA: Kartları yorumlarken sadece ana anlamlarını değil, karttaki sembolleri (renkler, nesneler, figürlerin duruşu) de mutlaka yorumuna dahil et.
+    
+    4. YÖN KONTROLÜ VE FORMAT ZORUNLULUĞU: 
+       - Eğer kart DÜZ ise: Sadece görseli ve yorumu paylaş.
+       - Eğer kart TERS ise: Görseli paylaşırken Markdown formatının hemen altına "⚠️ BU KART TERS GELMİŞTİR" uyarısını ekle ve yorumu ters anlamına göre yap.
+       - Kartın yönü ne olursa olsun, her bölümün başında KESİNLİKLE şu yapıyı kullan:
+         ![Kart Adı](PostImages_Direct_Link)
+         **Durum:** [Düz / ⚠️ BU KART TERS GELMİŞTİR]
+         **Yorum:** [Kartın sembolik ve konumsal yorumu]
 
-    YAZIM VE FORMAT KURALLARI:
-    1. Tüm ana başlıklar KESİNLİKLE kendi satırında, tamamen BÜYÜK HARFLERLE yazılmalıdır.
-    2. Başlıkların başında veya sonunda yıldız (*) veya başka Markdown işaretleri kullanma.
-    3. Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır.
-    4. Ton: Bilge, mistik ve derinlemesine.
+    5. HATA ÖNLEME: "Ters [Kart Adı]" şeklinde bir görsel linki arama; her zaman listenizdeki orijinal düz kart linkini kullan.
+    
+    6. DİL VE TON: Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır. Bilge, mistik ve yol gösterici bir ton kullan.
   `;
 
   try {
     const response = await ai.models.generateContent({
-      model,
-      contents: prompt,
-      config: {
-        temperature: 0.8,
-        topP: 0.9,
-      }
+      model: model,
+      contents: prompt
     });
-    return response.text || "Yorum alınamadı.";
+    return response.text || "Mistik sisler şu an çok yoğun, yanıt alınamadı.";
   } catch (error) {
-    console.error("Gemini API Error:", error);
-    return "Mistik kanallarla bağlantı kurulamadı. Lütfen tekrar deneyin.";
+    console.error("Tarot error:", error);
+    throw error;
   }
 };
 
 export const getRumiFollowUpAnswer = async (
   question: string,
-  rumiCard: CardSelection,
+  baseCard: CardSelection,
   language: Language
 ): Promise<string> => {
-  const model = 'gemini-3-flash-preview';
+  const model = 'gemini-3-pro-preview';
   
   const prompt = `
-    Danışan Sorusu: "${question}"
-    Rumi Kartı: "${rumiCard.card.name}" ${rumiCard.isReversed ? '(Ters)' : '(Düz)'} - Görsel: ${rumiCard.card.imageUrl}
-
-    Sen Mevlana Celaleddin Rumi'nin bilgeliğini taşıyan bir rehbersin.
+    Sen Rumi (Mevlana) bilgeliğiyle konuşan bir mistik rehbersin. 
+    Kullanıcı sana şu soruyu soruyor: "${question}"
     
-    YAZIM VE FORMAT KURALLARI:
-    1. Yanıtın başında mutlaka Rumi kartının görselini ![Rumi](GÖRSEL) şeklinde ekle.
-    2. Cevabını şu üç başlık altında ver: GÖNÜL GÖZÜ, MESNEVİ'DEN HİKMET, CEVAP.
-    3. Bir kart 'Ters' (Reversed) olarak çekildiğinde, yine o kartın düz hali için sana tanımlanan görsel linkini kullan. 
-    4. Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır.
+    Lütfen bu soruya yanıt vermek için Rumi Tarot (Sufi Wisdom) destesinden sezgisel olarak bir kart seç.
+    
+    TALİMATLAR:
+    1. GÖRSEL KULLANMA. Kesinlikle Markdown görsel etiketi (![...](...)) kullanma.
+    2. Yanıtın başında seçtiğin kartın adını büyük harflerle belirt: "KART: [RUMİ KARTI ADI]"
+    3. Seçtiğin kartın Rumi bilgeliğindeki karşılığını, Mevlana'nın bir sözüyle veya o derin felsefeyle harmanlayarak anlat.
+    4. Kullanıcının sorusuna doğrudan ve ruhani bir derinlikle cevap ver.
+    5. Dil: ${getLanguageName(language)}.
+    6. Format:
+       KART: [KART ADI]
+       **Cevap:** [Rumi bilgeliğiyle harmanlanmış derin yorum]
   `;
 
   try {
     const response = await ai.models.generateContent({
-      model,
-      contents: prompt,
-      config: { 
-        temperature: 0.75,
-        topP: 0.9
-      }
+      model: model,
+      contents: prompt
     });
-    return response.text || "Rumi sükut etmeyi seçti.";
+    return response.text || "Rumi'nin sesi rüzgarda kayboldu...";
   } catch (error) {
-    return "Gönül kapısı şu an kapalı.";
+    console.error("Rumi error:", error);
+    return "Mistik bir hata oluştu.";
   }
 };

@@ -1,3 +1,4 @@
+
 import { TarotCard, SpreadType, DeckType } from './types';
 
 export const MAJOR_ARCANA_NAMES = [

@@ -97,9 +97,9 @@ const InterpretationRenderer: React.FC<{ text: string }> = ({ text }) => {
             );
           }
 
-          // Standard Paragraph Style (White, Justified, Indented)
+          // Standard Paragraph Style (Even More Dimmed White, Justified, Indented)
           return (
-            <p key={`${i}-${j}`} className="font-playfair text-lg leading-relaxed text-slate-100 text-justify indent-8 opacity-100 mb-6 last:mb-0">
+            <p key={`${i}-${j}`} className="font-playfair text-lg leading-relaxed text-slate-400 text-justify indent-8 opacity-80 mb-6 last:mb-0">
               {cleanText}
             </p>
           );

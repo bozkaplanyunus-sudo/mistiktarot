@@ -31,7 +31,7 @@ export const getTarotInterpretation = async (
     : "Genel bir enerji okuması yap.";
 
   const prompt = `
-    Aşağıdaki tarot açılımını yorumla:
+    Aşağıdaki tarot açılımını derinlemesine yorumla:
     Deste: ${deck}
     Açılım: ${spread}
     ${intentContext}
@@ -39,25 +39,18 @@ export const getTarotInterpretation = async (
     Kartlar:
     ${cardsDescription}
 
-    # KRİTİK TALİMATLAR
+    # FORMAT VE GÖRÜNÜM TALİMATLARI (HAYATİ ÖNEMDE)
     
-    1. AYRIŞTIRMA ADIMI: Bir kart seçildiğinde (örneğin: "Ters Joker" veya "Joker - Ters"), önce "Ters" ibaresini kartın isminden ayır ve kartın kök adını (Örn: "Joker") bul.
-    
-    2. GÖRSEL BULMA: Bulduğun bu kök adına karşılık gelen PostImages linkini sana yukarıda sağlanan "Görsel Linki" değerlerinden sorgula.
-    
-    3. SEMBOLİK YORUMLAMA: Kartları yorumlarken sadece ana anlamlarını değil, karttaki sembolleri (renkler, nesneler, figürlerin duruşu) de mutlaka yorumuna dahil et.
-    
-    4. YÖN KONTROLÜ VE FORMAT ZORUNLULUĞU: 
-       - Eğer kart DÜZ ise: Sadece görseli ve yorumu paylaş.
-       - Eğer kart TERS ise: Görseli paylaşırken Markdown formatının hemen altına "⚠️ BU KART TERS GELMİŞTİR" uyarısını ekle ve yorumu ters anlamına göre yap.
-       - Kartın yönü ne olursa olsun, her bölümün başında KESİNLİKLE şu yapıyı kullan:
-         ![Kart Adı](PostImages_Direct_Link)
-         **Durum:** [Düz / ⚠️ BU KART TERS GELMİŞTİR]
-         **Yorum:** [Kartın sembolik ve konumsal yorumu]
+    1. YAPI: Her kart için önce başlık, sonra görsel, sonra durum ve en son uzun, edebi bir paragraf kullan.
+    2. MADDE İŞARETİ KULLANMA: Yanıtında kesinlikle liste, madde işareti (- veya *) kullanma. Tüm metni düzgün paragraflar halinde yaz.
+    3. BAŞLIKLAR: Her bölüm başlığını (Örn: "1. KART: GEÇMİŞ - JOKER") büyük harflerle ve tek satırda yaz.
+    4. GÖRSEL KONTROLÜ: 
+       ![Kart Adı](Sağlanan_Görsel_Linki) formatını kullan.
+    5. PARAGRAF DERİNLİĞİ: Her kartın yorumu en az 4-5 uzun cümleden oluşan, akıcı ve derin bir paragraf olmalıdır. Sezgisel bir dil kullan.
+    6. DİL: Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır.
+    7. TERS KARTLAR: Eğer kart ters ise, görselin hemen altına "Durum: ⚠️ BU KART TERS GELMİŞTİR" yaz ve yorumu buna göre kurgula. Düz ise "Durum: Düz" yaz.
 
-    5. HATA ÖNLEME: "Ters [Kart Adı]" şeklinde bir görsel linki arama; her zaman listenizdeki orijinal düz kart linkini kullan.
-    
-    6. DİL VE TON: Yanıtın tamamı ${getLanguageName(language)} dilinde olmalıdır. Bilge, mistik ve yol gösterici bir ton kullan.
+    Yorumun sonunda genel bir sentez (SONUÇ) bölümü ekle.
   `;
 
   try {
@@ -86,14 +79,11 @@ export const getRumiFollowUpAnswer = async (
     Lütfen bu soruya yanıt vermek için Rumi Tarot (Sufi Wisdom) destesinden sezgisel olarak bir kart seç.
     
     TALİMATLAR:
-    1. GÖRSEL KULLANMA. Kesinlikle Markdown görsel etiketi (![...](...)) kullanma.
+    1. GÖRSEL KULLANMA.
     2. Yanıtın başında seçtiğin kartın adını büyük harflerle belirt: "KART: [RUMİ KARTI ADI]"
     3. Seçtiğin kartın Rumi bilgeliğindeki karşılığını, Mevlana'nın bir sözüyle veya o derin felsefeyle harmanlayarak anlat.
-    4. Kullanıcının sorusuna doğrudan ve ruhani bir derinlikle cevap ver.
+    4. Yanıtını tek bir derin ve akıcı paragraf olarak yaz. Madde işareti kullanma.
     5. Dil: ${getLanguageName(language)}.
-    6. Format:
-       KART: [KART ADI]
-       **Cevap:** [Rumi bilgeliğiyle harmanlanmış derin yorum]
   `;
 
   try {

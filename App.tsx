@@ -58,15 +58,17 @@ const InterpretationRenderer: React.FC<{ text: string }> = ({ text }) => {
 
         const paragraphs = part.split('\n').filter(p => p.trim() !== '');
         return paragraphs.map((p, j) => {
-          // Clean text: remove leading # symbols and all ** occurrences
-          const cleanText = p.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim();
-          
-          // Heuristics for different content types
+          // Clean text: remove leading symbols and bold markers
+          const cleanText = p.replace(/^[#\*\-\s]+/, '').replace(/\*\*/g, '').trim();
+          if (!cleanText) return null;
+
+          // Heuristics for headers vs paragraphs
           const isOriginalHeading = p.trim().startsWith('#');
           const isAllCaps = cleanText === cleanText.toUpperCase() && cleanText.length > 3;
           const isStatus = cleanText.startsWith('Durum:');
-          const isLabel = cleanText.startsWith('Yorum:') || cleanText.startsWith('Cevap:');
+          const isLabel = cleanText.startsWith('Yorum:') || cleanText.startsWith('Cevap:') || cleanText.startsWith('KART:');
 
+          // Header Style (Orange)
           if ((isOriginalHeading || isAllCaps) && !isStatus && !isLabel) {
             return (
               <h3 key={`${i}-${j}`} className="font-cinzel text-amber-500 text-xl md:text-2xl tracking-[0.2em] mt-12 mb-6 uppercase text-center border-b border-amber-500/10 pb-4">
@@ -75,9 +77,10 @@ const InterpretationRenderer: React.FC<{ text: string }> = ({ text }) => {
             );
           }
 
+          // Special status badges
           if (isStatus) {
             return (
-              <div key={`${i}-${j}`} className="flex justify-center mb-2">
+              <div key={`${i}-${j}`} className="flex justify-center mb-4">
                 <span className="bg-amber-500/10 border border-amber-500/20 text-amber-500 px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">
                   {cleanText}
                 </span>
@@ -85,16 +88,18 @@ const InterpretationRenderer: React.FC<{ text: string }> = ({ text }) => {
             );
           }
 
+          // Sub-labels
           if (isLabel) {
             return (
-              <div key={`${i}-${j}`} className="font-cinzel text-amber-500/80 text-sm font-bold uppercase tracking-[0.2em] mb-2 mt-4">
+              <div key={`${i}-${j}`} className="font-cinzel text-amber-500/80 text-sm font-bold uppercase tracking-[0.2em] mb-2 mt-6">
                 {cleanText}
               </div>
             );
           }
 
+          // Standard Paragraph Style (White, Justified, Indented)
           return (
-            <p key={`${i}-${j}`} className="font-playfair text-lg leading-relaxed text-slate-300 text-justify indent-8 opacity-90 mb-4">
+            <p key={`${i}-${j}`} className="font-playfair text-lg leading-relaxed text-slate-100 text-justify indent-8 opacity-100 mb-6 last:mb-0">
               {cleanText}
             </p>
           );
@@ -240,7 +245,7 @@ const App: React.FC = () => {
 
     return (
       <div className="flex flex-col h-full w-full max-w-6xl mx-auto overflow-hidden">
-        {/* ÜST ALAN: SEÇİLEN KARTLAR (DAHA BELİRGİN VE ESTETİK) */}
+        {/* ÜST ALAN: SEÇİLEN KARTLAR */}
         <div className="flex-none p-4 md:p-8 border-b border-amber-500/10 bg-slate-950/80 backdrop-blur-xl shadow-2xl relative overflow-hidden">
           <div className="absolute inset-0 bg-amber-500/5 mask-fade-edges opacity-30" />
           
